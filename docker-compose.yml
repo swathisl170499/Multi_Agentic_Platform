@@ -1,0 +1,13 @@
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      MAP_PROVIDER: "${MAP_PROVIDER:-mock}"
+      MAP_OPENAI_API_KEY: "${MAP_OPENAI_API_KEY:-}"
+      MAP_OPENAI_MODEL: "${MAP_OPENAI_MODEL:-gpt-4o-mini}"
+      MAP_MAX_TOKENS: "${MAP_MAX_TOKENS:-800}"
+      MAP_TEMPERATURE: "${MAP_TEMPERATURE:-0.2}"
+    volumes:
+      - ./src:/app/src

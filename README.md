@@ -1,16 +1,26 @@
 # Multi_Agentic_Platform
 
-A production-ready multi-agent orchestration platform with a lightweight sandbox runner.
+Open-source multi-agent platform for **RAG + LangChain + LangGraph + MCP** company workflows.
 
-## Features
-- Pluggable LLM providers (mock + OpenAI starter implementation).
-- Multi-agent workflow (planner → coder → reviewer).
-- Optional sandbox execution for Python code.
-- FastAPI service for testing and integration.
-- RAG pipeline with document ingestion (PDF/JSON/CSV/TXT), chunking, embeddings, FAISS retrieval, and reranking.
-- Simple built-in UI for sample ingestion, adding custom text/JSON/CSV content, and querying.
+## What is included
+- Multi-agent orchestration (`planner -> coder -> reviewer`).
+- Native RAG pipeline (chunking + sentence-transformers embeddings + FAISS + reranker).
+- LangChain RAG service for company knowledge retrieval.
+- LangGraph workflow for enterprise-style request handling (retrieve, draft, compliance, finalize).
+- MCP gateway endpoints to inspect configured MCP servers/tools.
+- Browser UI (`/`) to run the full flow quickly.
 
-## Quickstart
+## Open-source model setup (recommended)
+Use local Hugging Face models (no closed provider required):
+
+```bash
+export MAP_PROVIDER=hf
+export MAP_HF_MODEL=Qwen/Qwen2.5-0.5B-Instruct
+```
+
+(You can still use `MAP_PROVIDER=mock` for offline smoke tests.)
+
+## Quick start
 
 ```bash
 python -m venv .venv
@@ -20,80 +30,65 @@ uvicorn multi_agentic_platform.main:app --reload
 ```
 
 Open:
+- UI: `http://localhost:8000/`
 - API docs: `http://localhost:8000/docs`
-- RAG UI: `http://localhost:8000/`
 
-## Running with Docker
+## Core company workflow style (end-to-end)
 
-```bash
-docker compose up --build
-```
-
-## API usage
-
-```bash
-curl -X POST http://localhost:8000/run \
-  -H "Content-Type: application/json" \
-  -d '{"prompt": "Write a Python function that adds two numbers.", "language": "python"}'
-```
-
-## RAG usage
-
-### 1) Ingest documents by path
-
-```bash
-curl -X POST http://localhost:8000/rag/ingest \
-  -H "Content-Type: application/json" \
-  -d '{"paths": ["/data/handbook.pdf", "/data/records.csv", "/data/config.json"]}'
-```
-
-### 2) Ingest sample docs bundled in repo
-
+### 1) Ingest sample company docs (native RAG)
 ```bash
 curl -X POST http://localhost:8000/rag/ingest/samples
 ```
 
-### 3) Ingest custom text document
-
+### 2) Ingest sample docs for LangChain/LangGraph workflow
 ```bash
-curl -X POST http://localhost:8000/rag/ingest/text \
-  -H "Content-Type: application/json" \
-  -d '{"documents": [{"source": "notes.txt", "content": "MFA is required for production access."}]}'
+curl -X POST http://localhost:8000/workflow/ingest/samples
 ```
 
-### 4) Query (top 5)
-
+### 3) Ask a retrieval question (top 5)
 ```bash
 curl -X POST http://localhost:8000/rag/query \
   -H "Content-Type: application/json" \
   -d '{"query": "What are onboarding requirements?", "top_k": 5}'
 ```
 
-### 5) Query with reranker agent
-
+### 4) Run full company workflow (LangGraph)
 ```bash
-curl -X POST http://localhost:8000/rag/query \
+curl -X POST http://localhost:8000/workflow/run \
   -H "Content-Type: application/json" \
-  -d '{"query": "security controls", "top_k": 5, "use_agent_reranker": true}'
+  -d '{"query": "Create onboarding workflow for support engineers with security steps"}'
 ```
 
-## Provider configuration
+## MCP server integration
+Configure one or more MCP servers via env vars.
 
-Set environment variables (or copy `.env.example` to `.env`) to configure providers:
+Example (filesystem server):
 
-- `MAP_PROVIDER=mock` (default) or `openai`
-- `MAP_OPENAI_API_KEY=...`
-- `MAP_OPENAI_MODEL=gpt-4o-mini`
+```bash
+export MAP_MCP_SERVER_NAMES=filesystem
+export MAP_MCP_FILESYSTEM_COMMAND=npx
+export MAP_MCP_FILESYSTEM_ARGS="-y @modelcontextprotocol/server-filesystem /workspace"
+```
 
-## RAG configuration
+Then check configured servers/tools:
 
-- `MAP_RAG_EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2`
-- `MAP_RAG_RERANKER_MODEL=cross-encoder/ms-marco-MiniLM-L-6-v2`
-- `MAP_RAG_CHUNK_SIZE=600`
-- `MAP_RAG_CHUNK_OVERLAP=120`
+```bash
+curl http://localhost:8000/mcp/servers
+curl http://localhost:8000/mcp/servers/filesystem/tools
+```
 
-## Sandbox note
+## Key API routes
+- `POST /run` - existing multi-agent code workflow.
+- `POST /rag/ingest`
+- `POST /rag/ingest/text`
+- `POST /rag/ingest/samples`
+- `POST /rag/query`
+- `POST /workflow/ingest`
+- `POST /workflow/ingest/samples`
+- `POST /workflow/run`
+- `GET /mcp/servers`
+- `GET /mcp/servers/{server_name}/tools`
 
-The included sandbox is a lightweight subprocess executor for quick local testing.
-For production workloads, use container or VM isolation with network and filesystem
-restrictions.
+## Notes
+- Heavy dependencies (LangChain/LangGraph/MCP/FAISS) initialize lazily and only when endpoints are used.
+- If you see dependency errors, run `pip install -e .` in a network-enabled environment.

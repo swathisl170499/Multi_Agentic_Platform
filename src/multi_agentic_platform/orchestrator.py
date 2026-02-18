@@ -7,6 +7,7 @@ from multi_agentic_platform.agents.presets import (
 )
 from multi_agentic_platform.config import settings
 from multi_agentic_platform.providers.base import LLMProvider
+from multi_agentic_platform.providers.huggingface_provider import HuggingFaceProvider
 from multi_agentic_platform.providers.mock import MockProvider
 from multi_agentic_platform.providers.openai_provider import OpenAIProvider
 from multi_agentic_platform.schemas import AgentTrace, RunRequest, RunResponse
@@ -16,6 +17,8 @@ from multi_agentic_platform.sandbox.executor import SandboxExecutor
 def _load_provider() -> LLMProvider:
     if settings.provider == "openai":
         return OpenAIProvider()
+    if settings.provider in {"hf", "huggingface"}:
+        return HuggingFaceProvider()
     return MockProvider()
 
 

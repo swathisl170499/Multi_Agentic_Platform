@@ -53,3 +53,30 @@ class RAGResult(BaseModel):
 class RAGQueryResponse(BaseModel):
     query: str
     results: list[RAGResult]
+
+
+class WorkflowIngestRequest(BaseModel):
+    paths: list[str] = Field(default_factory=list, min_length=1)
+
+
+class WorkflowRunRequest(BaseModel):
+    query: str = Field(..., min_length=2, max_length=8000)
+
+
+class WorkflowRunResponse(BaseModel):
+    query: str
+    contexts: list[str]
+    draft: str
+    compliance_notes: str
+    final_answer: str
+
+
+class MCPServerInfo(BaseModel):
+    name: str
+    command: str
+    args: list[str]
+
+
+class MCPToolsResponse(BaseModel):
+    server: str
+    tools: list[dict[str, str]]

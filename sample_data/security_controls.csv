@@ -1,0 +1,4 @@
+control_id,control_name,description
+SC-01,Multi-factor authentication,Require MFA for all production access.
+SC-02,Least privilege,Grant minimum required permissions for each role.
+SC-03,Logging and monitoring,Centralize logs and alert on suspicious activity.

@@ -1,0 +1,8 @@
+{
+  "product": "Atlas Support Bot",
+  "faq": [
+    {"q": "How is data stored?", "a": "Data is encrypted at rest and in transit."},
+    {"q": "How long are logs retained?", "a": "Logs are retained for 90 days by default."},
+    {"q": "What is the SLA?", "a": "99.9% monthly uptime."}
+  ]
+}

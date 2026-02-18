@@ -6,13 +6,14 @@ from multi_agentic_platform.agents.presets import (
     create_reviewer,
 )
 from multi_agentic_platform.config import settings
+from multi_agentic_platform.providers.base import LLMProvider
 from multi_agentic_platform.providers.mock import MockProvider
 from multi_agentic_platform.providers.openai_provider import OpenAIProvider
 from multi_agentic_platform.schemas import AgentTrace, RunRequest, RunResponse
 from multi_agentic_platform.sandbox.executor import SandboxExecutor
 
 
-def _load_provider():
+def _load_provider() -> LLMProvider:
     if settings.provider == "openai":
         return OpenAIProvider()
     return MockProvider()
@@ -20,10 +21,10 @@ def _load_provider():
 
 class Orchestrator:
     def __init__(self) -> None:
-        provider = _load_provider()
-        self.planner = create_planner(provider)
-        self.coder = create_coder(provider)
-        self.reviewer = create_reviewer(provider)
+        self.provider = _load_provider()
+        self.planner = create_planner(self.provider)
+        self.coder = create_coder(self.provider)
+        self.reviewer = create_reviewer(self.provider)
         self.sandbox = SandboxExecutor()
 
     async def run(self, request: RunRequest) -> RunResponse:

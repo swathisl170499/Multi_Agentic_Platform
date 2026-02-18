@@ -10,5 +10,10 @@ class Settings(BaseSettings):
     max_tokens: int = 800
     temperature: float = 0.2
 
+    rag_embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
+    rag_reranker_model: str = "cross-encoder/ms-marco-MiniLM-L-6-v2"
+    rag_chunk_size: int = 600
+    rag_chunk_overlap: int = 120
+
 
 settings = Settings()

@@ -1,0 +1,10 @@
+Acme Corp Employee Handbook
+
+Onboarding requirements:
+- Complete security awareness training within 7 days.
+- Sign NDA and acceptable use policy.
+- Set up MFA for all internal systems.
+
+Remote work policy:
+- Employees must use company VPN.
+- Devices must be encrypted.

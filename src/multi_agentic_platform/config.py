@@ -7,8 +7,20 @@ class Settings(BaseSettings):
     provider: str = "mock"
     openai_api_key: str | None = None
     openai_model: str = "gpt-4o-mini"
+    hf_model: str = "Qwen/Qwen2.5-0.5B-Instruct"
+    hf_api_token: str | None = None
+    hf_inference_model: str = "HuggingFaceTB/SmolLM2-1.7B-Instruct"
     max_tokens: int = 800
     temperature: float = 0.2
+
+    rag_embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
+    rag_reranker_model: str = "cross-encoder/ms-marco-MiniLM-L-6-v2"
+    rag_chunk_size: int = 600
+    rag_chunk_overlap: int = 120
+    rag_use_online_inference: bool = False
+
+    # Comma-separated list of MCP server names, e.g. "filesystem,github"
+    mcp_server_names: str = ""
 
 
 settings = Settings()
